@@ -39,6 +39,20 @@ CREATE TABLE `BF_automationFault` (
   CONSTRAINT `BF_automationFault_ibfk1` FOREIGN KEY (`automationErrorId`) REFERENCES `BF_automationError` (`automationErrorId`),
   CONSTRAINT `BF_automationFault_ibfk2` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+--
+-- Table structure for table `BF_system`
+--
+
+DROP TABLE IF EXISTS `BF_system`;
+CREATE TABLE `BF_system` (
+  `systemId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`systemId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
 --
 -- Table structure for table `BF_component`
 --
@@ -68,6 +82,7 @@ CREATE TABLE `BF_component_beamline` (
   KEY `bf_component_beamline_FK1` (`componentId`),
   CONSTRAINT `bf_component_beamline_FK1` FOREIGN KEY (`componentId`) REFERENCES `BF_component` (`componentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 --
 -- Table structure for table `BF_fault`
@@ -134,17 +149,7 @@ CREATE TABLE `BF_subcomponent_beamline` (
   CONSTRAINT `bf_subcomponent_beamline_FK1` FOREIGN KEY (`subcomponentId`) REFERENCES `BF_subcomponent` (`SUBCOMPONENTID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `BF_system`
---
 
-DROP TABLE IF EXISTS `BF_system`;
-CREATE TABLE `BF_system` (
-  `systemId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `description` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`systemId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `BF_system_beamline`
@@ -160,19 +165,6 @@ CREATE TABLE `BF_system_beamline` (
   CONSTRAINT `bf_system_beamline_FK1` FOREIGN KEY (`systemId`) REFERENCES `BF_system` (`SYSTEMID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `ScreenComponent`;
-CREATE TABLE `ScreenComponent` (
-  `screenComponentId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `screenComponentGroupId` int(11) UNSIGNED NOT NULL,
-  `componentId` int(11) UNSIGNED DEFAULT NULL,
-  `concentration` float DEFAULT NULL,
-  `pH` float DEFAULT NULL,
-  PRIMARY KEY (`screenComponentId`),
-  KEY `ScreenComponent_fk1` (`screenComponentGroupId`),
-  KEY `ScreenComponent_fk2` (`componentId`),
-  CONSTRAINT `ScreenComponent_fk1` FOREIGN KEY (`screenComponentGroupId`) REFERENCES `ScreenComponentGroup` (`screenComponentGroupId`),
-  CONSTRAINT `ScreenComponent_fk2` FOREIGN KEY (`componentId`) REFERENCES `Protein` (`proteinId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `BLSampleGroup`
@@ -201,95 +193,6 @@ CREATE TABLE `BLSampleGroup_has_BLSample` (
   CONSTRAINT `BLSampleGroup_has_BLSample_ibfk2` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `BLSampleImage`
---
-
-DROP TABLE IF EXISTS `BLSampleImage`;
-
-CREATE TABLE `BLSampleImage` (
-  `blSampleImageId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `blSampleId` int(11) UNSIGNED NOT NULL,
-  `micronsPerPixelX` float DEFAULT NULL,
-  `micronsPerPixelY` float DEFAULT NULL,
-  `imageFullPath` varchar(255) DEFAULT NULL,
-  `blSampleImageScoreId` int(11) DEFAULT NULL,
-  `comments` varchar(255) DEFAULT NULL,
-  `blTimeStamp` datetime DEFAULT NULL,
-  `containerInspectionId` int(11) UNSIGNED DEFAULT NULL,
-  `modifiedTimeStamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`blSampleImageId`),
-  KEY `BLSampleImage_fk2` (`containerInspectionId`),
-  KEY `BLSampleImage_idx1` (`blSampleId`),
-  CONSTRAINT `BLSampleImage_fk1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `BLSampleImage_fk2` FOREIGN KEY (`containerInspectionId`) REFERENCES `ContainerInspection` (`containerInspectionId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `BLSampleImageAnalysis`
---
-
-DROP TABLE IF EXISTS `BLSampleImageAnalysis`;
-
-CREATE TABLE `BLSampleImageAnalysis` (
-  `blSampleImageAnalysisId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `blSampleImageId` int(11) UNSIGNED DEFAULT NULL,
-  `oavSnapshotBefore` varchar(255) DEFAULT NULL,
-  `oavSnapshotAfter` varchar(255) DEFAULT NULL,
-  `deltaX` int(11) DEFAULT NULL,
-  `deltaY` int(11) DEFAULT NULL,
-  `goodnessOfFit` float DEFAULT NULL,
-  `scaleFactor` float DEFAULT NULL,
-  `resultCode` varchar(15) DEFAULT NULL,
-  `matchStartTimeStamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `matchEndTimeStamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`blSampleImageAnalysisId`),
-  KEY `BLSampleImageAnalysis_ibfk1` (`blSampleImageId`),
-  CONSTRAINT `BLSampleImageAnalysis_ibfk1` FOREIGN KEY (`blSampleImageId`) REFERENCES `BLSampleImage` (`blSampleImageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `BLSampleImageScore`
---
-
-DROP TABLE IF EXISTS `BLSampleImageScore`;
-CREATE TABLE `BLSampleImageScore` (
-  `blSampleImageScoreId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL,
-  `score` float DEFAULT NULL,
-  `colour` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`blSampleImageScoreId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `BLSampleType_has_Component`
---
-
-DROP TABLE IF EXISTS `BLSampleType_has_Component`;
-CREATE TABLE `BLSampleType_has_Component` (
-  `blSampleTypeId` int(10) UNSIGNED NOT NULL,
-  `componentId` int(10) UNSIGNED NOT NULL,
-  `abundance` float DEFAULT NULL,
-  PRIMARY KEY (`blSampleTypeId`,`componentId`),
-  KEY `blSampleType_has_Component_fk2` (`componentId`),
-  CONSTRAINT `blSampleType_has_Component_fk1` FOREIGN KEY (`blSampleTypeId`) REFERENCES `Crystal` (`crystalId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `blSampleType_has_Component_fk2` FOREIGN KEY (`componentId`) REFERENCES `Protein` (`proteinId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `BLSample_has_DiffractionPlan`
---
-
-DROP TABLE IF EXISTS `BLSample_has_DiffractionPlan`;
-
-CREATE TABLE `BLSample_has_DiffractionPlan` (
-  `blSampleId` int(11) UNSIGNED NOT NULL,
-  `diffractionPlanId` int(11) UNSIGNED NOT NULL,
-  PRIMARY KEY (`blSampleId`,`diffractionPlanId`),
-  KEY `BLSample_has_DiffractionPlan_ibfk2` (`diffractionPlanId`),
-  CONSTRAINT `BLSample_has_DiffractionPlan_ibfk1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`),
-  CONSTRAINT `BLSample_has_DiffractionPlan_ibfk2` FOREIGN KEY (`diffractionPlanId`) REFERENCES `DiffractionPlan` (`diffractionPlanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `BLSample_has_EnergyScan`
@@ -307,6 +210,24 @@ CREATE TABLE `BLSample_has_EnergyScan` (
   CONSTRAINT `BLSample_has_EnergyScan_ibfk_1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `BLSample_has_EnergyScan_ibfk_2` FOREIGN KEY (`energyScanId`) REFERENCES `EnergyScan` (`energyScanId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `BeamlineStats`;
+CREATE TABLE `BeamlineStats` (
+  `beamlineStatsId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `beamline` varchar(10) DEFAULT NULL,
+  `recordTimeStamp` datetime DEFAULT NULL,
+  `ringCurrent` float DEFAULT NULL,
+  `energy` float DEFAULT NULL,
+  `gony` float DEFAULT NULL,
+  `beamW` float DEFAULT NULL,
+  `beamH` float DEFAULT NULL,
+  `flux` double DEFAULT NULL,
+  `scanFileW` varchar(255) DEFAULT NULL,
+  `scanFileH` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`beamlineStatsId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
 
 -- Table structure for table `BeamApertures`
 --
@@ -362,21 +283,7 @@ CREATE TABLE `BeamlineAction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `BeamlineStats`;
-CREATE TABLE `BeamlineStats` (
-  `beamlineStatsId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `beamline` varchar(10) DEFAULT NULL,
-  `recordTimeStamp` datetime DEFAULT NULL,
-  `ringCurrent` float DEFAULT NULL,
-  `energy` float DEFAULT NULL,
-  `gony` float DEFAULT NULL,
-  `beamW` float DEFAULT NULL,
-  `beamH` float DEFAULT NULL,
-  `flux` double DEFAULT NULL,
-  `scanFileW` varchar(255) DEFAULT NULL,
-  `scanFileH` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`beamlineStatsId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
 
 --
 -- Table structure for table `CalendarHash`
@@ -450,75 +357,8 @@ CREATE TABLE `ContainerHistory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table `ContainerInspection`
---
-
-DROP TABLE IF EXISTS `ContainerInspection`;
-
-CREATE TABLE `ContainerInspection` (
-  `containerInspectionId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerId` int(11) UNSIGNED NOT NULL,
-  `inspectionTypeId` int(11) UNSIGNED NOT NULL,
-  `imagerId` int(11) UNSIGNED DEFAULT NULL,
-  `temperature` float DEFAULT NULL,
-  `blTimeStamp` datetime DEFAULT NULL,
-  `scheduleComponentid` int(11) UNSIGNED DEFAULT NULL,
-  `state` varchar(20) DEFAULT NULL,
-  `priority` smallint(6) DEFAULT NULL,
-  `manual` tinyint(1) DEFAULT NULL,
-  `scheduledTimeStamp` datetime DEFAULT NULL,
-  `completedTimeStamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`containerInspectionId`),
-  KEY `ContainerInspection_fk4` (`scheduleComponentid`),
-  KEY `ContainerInspection_idx1` (`containerId`),
-  KEY `ContainerInspection_idx2` (`inspectionTypeId`),
-  KEY `ContainerInspection_idx3` (`imagerId`),
-  CONSTRAINT `ContainerInspection_fk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerInspection_fk2` FOREIGN KEY (`inspectionTypeId`) REFERENCES `InspectionType` (`inspectionTypeId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `ContainerInspection_fk3` FOREIGN KEY (`imagerId`) REFERENCES `Imager` (`imagerId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `ContainerInspection_fk4` FOREIGN KEY (`scheduleComponentid`) REFERENCES `ScheduleComponent` (`scheduleComponentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ContainerQueue`
---
-
-DROP TABLE IF EXISTS `ContainerQueue`;
-
-CREATE TABLE `ContainerQueue` (
-  `containerQueueId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerId` int(10) UNSIGNED DEFAULT NULL,
-  `personId` int(10) UNSIGNED DEFAULT NULL,
-  `createdTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `completedTimeStamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`containerQueueId`),
-  KEY `ContainerQueue_ibfk1` (`containerId`),
-  KEY `ContainerQueue_ibfk2` (`personId`),
-  CONSTRAINT `ContainerQueue_ibfk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerQueue_ibfk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ContainerQueueSample`
---
-
-DROP TABLE IF EXISTS `ContainerQueueSample`;
-
-CREATE TABLE `ContainerQueueSample` (
-  `containerQueueSampleId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerQueueId` int(11) UNSIGNED DEFAULT NULL,
-  `blSubSampleId` int(11) UNSIGNED DEFAULT NULL,
-  PRIMARY KEY (`containerQueueSampleId`),
-  KEY `ContainerQueueSample_ibfk1` (`containerQueueId`),
-  KEY `ContainerQueueSample_ibfk2` (`blSubSampleId`),
-  CONSTRAINT `ContainerQueueSample_ibfk1` FOREIGN KEY (`containerQueueId`) REFERENCES `ContainerQueue` (`containerQueueId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerQueueSample_ibfk2` FOREIGN KEY (`blSubSampleId`) REFERENCES `BLSubSample` (`blSubSampleId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
---
 -- Table structure for table `CourierTermsAccepted`
 --
-
 DROP TABLE IF EXISTS `CourierTermsAccepted`;
 
 CREATE TABLE `CourierTermsAccepted` (
@@ -959,6 +799,20 @@ CREATE TABLE `SW_onceToken` (
   CONSTRAINT `SW_onceToken_fk2` FOREIGN KEY (`proposalId`) REFERENCES `Proposal` (`proposalId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='One-time use tokens needed for token auth in order to grant access to file downloads and webcams (and some images)';
 
+
+--
+-- Table structure for table `ScanParametersService`
+--
+
+DROP TABLE IF EXISTS `ScanParametersService`;
+
+CREATE TABLE `ScanParametersService` (
+  `scanParametersServiceId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `description` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`scanParametersServiceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 --
 -- Table structure for table `ScanParametersModel`
 --
@@ -979,19 +833,6 @@ CREATE TABLE `ScanParametersModel` (
   KEY `PDF_Model_ibfk2` (`dataCollectionPlanId`),
   CONSTRAINT `PDF_Model_ibfk1` FOREIGN KEY (`scanParametersServiceId`) REFERENCES `ScanParametersService` (`scanParametersServiceId`) ON UPDATE CASCADE,
   CONSTRAINT `PDF_Model_ibfk2` FOREIGN KEY (`dataCollectionPlanId`) REFERENCES `DiffractionPlan` (`diffractionPlanId`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ScanParametersService`
---
-
-DROP TABLE IF EXISTS `ScanParametersService`;
-
-CREATE TABLE `ScanParametersService` (
-  `scanParametersServiceId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL,
-  `description` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`scanParametersServiceId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1041,6 +882,21 @@ CREATE TABLE `Screen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `ScreenComponentGroup`
+--
+
+DROP TABLE IF EXISTS `ScreenComponentGroup`;
+
+CREATE TABLE `ScreenComponentGroup` (
+  `screenComponentGroupId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `screenId` int(11) UNSIGNED NOT NULL,
+  `position` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`screenComponentGroupId`),
+  KEY `ScreenComponentGroup_fk1` (`screenId`),
+  CONSTRAINT `ScreenComponentGroup_fk1` FOREIGN KEY (`screenId`) REFERENCES `Screen` (`screenId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `ScreenComponent`
 --
 
@@ -1059,20 +915,6 @@ CREATE TABLE `ScreenComponent` (
   CONSTRAINT `ScreenComponent_fk2` FOREIGN KEY (`componentId`) REFERENCES `Protein` (`proteinId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `ScreenComponentGroup`
---
-
-DROP TABLE IF EXISTS `ScreenComponentGroup`;
-
-CREATE TABLE `ScreenComponentGroup` (
-  `screenComponentGroupId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `screenId` int(11) UNSIGNED NOT NULL,
-  `position` smallint(6) DEFAULT NULL,
-  PRIMARY KEY (`screenComponentGroupId`),
-  KEY `ScreenComponentGroup_fk1` (`screenId`),
-  CONSTRAINT `ScreenComponentGroup_fk1` FOREIGN KEY (`screenId`) REFERENCES `Screen` (`screenId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `SessionType`
@@ -1130,4 +972,162 @@ CREATE TABLE `UserGroup_has_Person` (
   CONSTRAINT `userGroup_has_Person_fk1` FOREIGN KEY (`userGroupId`) REFERENCES `UserGroup` (`userGroupId`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `userGroup_has_Person_fk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `BLSampleImage`
+--
+
+DROP TABLE IF EXISTS `BLSampleImage`;
+
+CREATE TABLE `BLSampleImage` (
+  `blSampleImageId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `blSampleId` int(11) UNSIGNED NOT NULL,
+  `micronsPerPixelX` float DEFAULT NULL,
+  `micronsPerPixelY` float DEFAULT NULL,
+  `imageFullPath` varchar(255) DEFAULT NULL,
+  `blSampleImageScoreId` int(11) DEFAULT NULL,
+  `comments` varchar(255) DEFAULT NULL,
+  `blTimeStamp` datetime DEFAULT NULL,
+  `containerInspectionId` int(11) UNSIGNED DEFAULT NULL,
+  `modifiedTimeStamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`blSampleImageId`),
+  KEY `BLSampleImage_fk2` (`containerInspectionId`),
+  KEY `BLSampleImage_idx1` (`blSampleId`),
+  CONSTRAINT `BLSampleImage_fk1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `BLSampleImage_fk2` FOREIGN KEY (`containerInspectionId`) REFERENCES `ContainerInspection` (`containerInspectionId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `BLSampleImageAnalysis`
+--
+
+DROP TABLE IF EXISTS `BLSampleImageAnalysis`;
+
+CREATE TABLE `BLSampleImageAnalysis` (
+  `blSampleImageAnalysisId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `blSampleImageId` int(11) UNSIGNED DEFAULT NULL,
+  `oavSnapshotBefore` varchar(255) DEFAULT NULL,
+  `oavSnapshotAfter` varchar(255) DEFAULT NULL,
+  `deltaX` int(11) DEFAULT NULL,
+  `deltaY` int(11) DEFAULT NULL,
+  `goodnessOfFit` float DEFAULT NULL,
+  `scaleFactor` float DEFAULT NULL,
+  `resultCode` varchar(15) DEFAULT NULL,
+  `matchStartTimeStamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `matchEndTimeStamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`blSampleImageAnalysisId`),
+  KEY `BLSampleImageAnalysis_ibfk1` (`blSampleImageId`),
+  CONSTRAINT `BLSampleImageAnalysis_ibfk1` FOREIGN KEY (`blSampleImageId`) REFERENCES `BLSampleImage` (`blSampleImageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `BLSampleImageScore`
+--
+
+DROP TABLE IF EXISTS `BLSampleImageScore`;
+CREATE TABLE `BLSampleImageScore` (
+  `blSampleImageScoreId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `score` float DEFAULT NULL,
+  `colour` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`blSampleImageScoreId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `BLSampleType_has_Component`
+--
+
+DROP TABLE IF EXISTS `BLSampleType_has_Component`;
+CREATE TABLE `BLSampleType_has_Component` (
+  `blSampleTypeId` int(10) UNSIGNED NOT NULL,
+  `componentId` int(10) UNSIGNED NOT NULL,
+  `abundance` float DEFAULT NULL,
+  PRIMARY KEY (`blSampleTypeId`,`componentId`),
+  KEY `blSampleType_has_Component_fk2` (`componentId`),
+  CONSTRAINT `blSampleType_has_Component_fk1` FOREIGN KEY (`blSampleTypeId`) REFERENCES `Crystal` (`crystalId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `blSampleType_has_Component_fk2` FOREIGN KEY (`componentId`) REFERENCES `Protein` (`proteinId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `BLSample_has_DiffractionPlan`
+--
+
+DROP TABLE IF EXISTS `BLSample_has_DiffractionPlan`;
+
+CREATE TABLE `BLSample_has_DiffractionPlan` (
+  `blSampleId` int(11) UNSIGNED NOT NULL,
+  `diffractionPlanId` int(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`blSampleId`,`diffractionPlanId`),
+  KEY `BLSample_has_DiffractionPlan_ibfk2` (`diffractionPlanId`),
+  CONSTRAINT `BLSample_has_DiffractionPlan_ibfk1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`),
+  CONSTRAINT `BLSample_has_DiffractionPlan_ibfk2` FOREIGN KEY (`diffractionPlanId`) REFERENCES `DiffractionPlan` (`diffractionPlanId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `ContainerInspection`
+--
+
+DROP TABLE IF EXISTS `ContainerInspection`;
+
+CREATE TABLE `ContainerInspection` (
+  `containerInspectionId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerId` int(11) UNSIGNED NOT NULL,
+  `inspectionTypeId` int(11) UNSIGNED NOT NULL,
+  `imagerId` int(11) UNSIGNED DEFAULT NULL,
+  `temperature` float DEFAULT NULL,
+  `blTimeStamp` datetime DEFAULT NULL,
+  `scheduleComponentid` int(11) UNSIGNED DEFAULT NULL,
+  `state` varchar(20) DEFAULT NULL,
+  `priority` smallint(6) DEFAULT NULL,
+  `manual` tinyint(1) DEFAULT NULL,
+  `scheduledTimeStamp` datetime DEFAULT NULL,
+  `completedTimeStamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`containerInspectionId`),
+  KEY `ContainerInspection_fk4` (`scheduleComponentid`),
+  KEY `ContainerInspection_idx1` (`containerId`),
+  KEY `ContainerInspection_idx2` (`inspectionTypeId`),
+  KEY `ContainerInspection_idx3` (`imagerId`),
+  CONSTRAINT `ContainerInspection_fk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerInspection_fk2` FOREIGN KEY (`inspectionTypeId`) REFERENCES `InspectionType` (`inspectionTypeId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `ContainerInspection_fk3` FOREIGN KEY (`imagerId`) REFERENCES `Imager` (`imagerId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `ContainerInspection_fk4` FOREIGN KEY (`scheduleComponentid`) REFERENCES `ScheduleComponent` (`scheduleComponentId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `ContainerQueue`
+--
+
+DROP TABLE IF EXISTS `ContainerQueue`;
+
+CREATE TABLE `ContainerQueue` (
+  `containerQueueId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerId` int(10) UNSIGNED DEFAULT NULL,
+  `personId` int(10) UNSIGNED DEFAULT NULL,
+  `createdTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `completedTimeStamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`containerQueueId`),
+  KEY `ContainerQueue_ibfk1` (`containerId`),
+  KEY `ContainerQueue_ibfk2` (`personId`),
+  CONSTRAINT `ContainerQueue_ibfk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerQueue_ibfk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `ContainerQueueSample`
+--
+
+DROP TABLE IF EXISTS `ContainerQueueSample`;
+
+CREATE TABLE `ContainerQueueSample` (
+  `containerQueueSampleId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerQueueId` int(11) UNSIGNED DEFAULT NULL,
+  `blSubSampleId` int(11) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`containerQueueSampleId`),
+  KEY `ContainerQueueSample_ibfk1` (`containerQueueId`),
+  KEY `ContainerQueueSample_ibfk2` (`blSubSampleId`),
+  CONSTRAINT `ContainerQueueSample_ibfk1` FOREIGN KEY (`containerQueueId`) REFERENCES `ContainerQueue` (`containerQueueId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerQueueSample_ibfk2` FOREIGN KEY (`blSubSampleId`) REFERENCES `BLSubSample` (`blSubSampleId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+
 
