@@ -83,6 +83,22 @@ CREATE TABLE `BF_component_beamline` (
   CONSTRAINT `bf_component_beamline_FK1` FOREIGN KEY (`componentId`) REFERENCES `BF_component` (`componentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Table structure for table `BF_subcomponent`
+--
+
+DROP TABLE IF EXISTS `BF_subcomponent`;
+                                                                                
+CREATE TABLE `BF_subcomponent` (
+  `subcomponentId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `componentId` int(10) UNSIGNED DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`subcomponentId`),
+  KEY `bf_subcomponent_FK1` (`componentId`),
+  CONSTRAINT `bf_subcomponent_FK1` FOREIGN KEY (`componentId`) REFERENCES `BF_component` (`componentId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 --
 -- Table structure for table `BF_fault`
@@ -119,21 +135,6 @@ CREATE TABLE `BF_fault` (
   CONSTRAINT `bf_fault_FK4` FOREIGN KEY (`assigneeId`) REFERENCES `Person` (`personId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `BF_subcomponent`
---
-
-DROP TABLE IF EXISTS `BF_subcomponent`;
-                                                                                
-CREATE TABLE `BF_subcomponent` (
-  `subcomponentId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `componentId` int(10) UNSIGNED DEFAULT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `description` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`subcomponentId`),
-  KEY `bf_subcomponent_FK1` (`componentId`),
-  CONSTRAINT `bf_subcomponent_FK1` FOREIGN KEY (`componentId`) REFERENCES `BF_component` (`componentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `BF_subcomponent_beamline`
@@ -973,6 +974,75 @@ CREATE TABLE `UserGroup_has_Person` (
   CONSTRAINT `userGroup_has_Person_fk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+--
+-- Table structure for table `ContainerInspection`
+--
+
+DROP TABLE IF EXISTS `ContainerInspection`;
+
+CREATE TABLE `ContainerInspection` (
+  `containerInspectionId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerId` int(11) UNSIGNED NOT NULL,
+  `inspectionTypeId` int(11) UNSIGNED NOT NULL,
+  `imagerId` int(11) UNSIGNED DEFAULT NULL,
+  `temperature` float DEFAULT NULL,
+  `blTimeStamp` datetime DEFAULT NULL,
+  `scheduleComponentid` int(11) UNSIGNED DEFAULT NULL,
+  `state` varchar(20) DEFAULT NULL,
+  `priority` smallint(6) DEFAULT NULL,
+  `manual` tinyint(1) DEFAULT NULL,
+  `scheduledTimeStamp` datetime DEFAULT NULL,
+  `completedTimeStamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`containerInspectionId`),
+  KEY `ContainerInspection_fk4` (`scheduleComponentid`),
+  KEY `ContainerInspection_idx1` (`containerId`),
+  KEY `ContainerInspection_idx2` (`inspectionTypeId`),
+  KEY `ContainerInspection_idx3` (`imagerId`),
+  CONSTRAINT `ContainerInspection_fk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerInspection_fk2` FOREIGN KEY (`inspectionTypeId`) REFERENCES `InspectionType` (`inspectionTypeId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `ContainerInspection_fk3` FOREIGN KEY (`imagerId`) REFERENCES `Imager` (`imagerId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `ContainerInspection_fk4` FOREIGN KEY (`scheduleComponentid`) REFERENCES `ScheduleComponent` (`scheduleComponentId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `ContainerQueue`
+--
+
+DROP TABLE IF EXISTS `ContainerQueue`;
+
+CREATE TABLE `ContainerQueue` (
+  `containerQueueId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerId` int(10) UNSIGNED DEFAULT NULL,
+  `personId` int(10) UNSIGNED DEFAULT NULL,
+  `createdTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `completedTimeStamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`containerQueueId`),
+  KEY `ContainerQueue_ibfk1` (`containerId`),
+  KEY `ContainerQueue_ibfk2` (`personId`),
+  CONSTRAINT `ContainerQueue_ibfk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerQueue_ibfk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `ContainerQueueSample`
+--
+
+DROP TABLE IF EXISTS `ContainerQueueSample`;
+
+CREATE TABLE `ContainerQueueSample` (
+  `containerQueueSampleId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `containerQueueId` int(11) UNSIGNED DEFAULT NULL,
+  `blSubSampleId` int(11) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`containerQueueSampleId`),
+  KEY `ContainerQueueSample_ibfk1` (`containerQueueId`),
+  KEY `ContainerQueueSample_ibfk2` (`blSubSampleId`),
+  CONSTRAINT `ContainerQueueSample_ibfk1` FOREIGN KEY (`containerQueueId`) REFERENCES `ContainerQueue` (`containerQueueId`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ContainerQueueSample_ibfk2` FOREIGN KEY (`blSubSampleId`) REFERENCES `BLSubSample` (`blSubSampleId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+
+
 --
 -- Table structure for table `BLSampleImage`
 --
@@ -1062,72 +1132,6 @@ CREATE TABLE `BLSample_has_DiffractionPlan` (
   CONSTRAINT `BLSample_has_DiffractionPlan_ibfk1` FOREIGN KEY (`blSampleId`) REFERENCES `BLSample` (`blSampleId`),
   CONSTRAINT `BLSample_has_DiffractionPlan_ibfk2` FOREIGN KEY (`diffractionPlanId`) REFERENCES `DiffractionPlan` (`diffractionPlanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ContainerInspection`
---
-
-DROP TABLE IF EXISTS `ContainerInspection`;
-
-CREATE TABLE `ContainerInspection` (
-  `containerInspectionId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerId` int(11) UNSIGNED NOT NULL,
-  `inspectionTypeId` int(11) UNSIGNED NOT NULL,
-  `imagerId` int(11) UNSIGNED DEFAULT NULL,
-  `temperature` float DEFAULT NULL,
-  `blTimeStamp` datetime DEFAULT NULL,
-  `scheduleComponentid` int(11) UNSIGNED DEFAULT NULL,
-  `state` varchar(20) DEFAULT NULL,
-  `priority` smallint(6) DEFAULT NULL,
-  `manual` tinyint(1) DEFAULT NULL,
-  `scheduledTimeStamp` datetime DEFAULT NULL,
-  `completedTimeStamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`containerInspectionId`),
-  KEY `ContainerInspection_fk4` (`scheduleComponentid`),
-  KEY `ContainerInspection_idx1` (`containerId`),
-  KEY `ContainerInspection_idx2` (`inspectionTypeId`),
-  KEY `ContainerInspection_idx3` (`imagerId`),
-  CONSTRAINT `ContainerInspection_fk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerInspection_fk2` FOREIGN KEY (`inspectionTypeId`) REFERENCES `InspectionType` (`inspectionTypeId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `ContainerInspection_fk3` FOREIGN KEY (`imagerId`) REFERENCES `Imager` (`imagerId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `ContainerInspection_fk4` FOREIGN KEY (`scheduleComponentid`) REFERENCES `ScheduleComponent` (`scheduleComponentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ContainerQueue`
---
-
-DROP TABLE IF EXISTS `ContainerQueue`;
-
-CREATE TABLE `ContainerQueue` (
-  `containerQueueId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerId` int(10) UNSIGNED DEFAULT NULL,
-  `personId` int(10) UNSIGNED DEFAULT NULL,
-  `createdTimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `completedTimeStamp` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`containerQueueId`),
-  KEY `ContainerQueue_ibfk1` (`containerId`),
-  KEY `ContainerQueue_ibfk2` (`personId`),
-  CONSTRAINT `ContainerQueue_ibfk1` FOREIGN KEY (`containerId`) REFERENCES `Container` (`containerId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerQueue_ibfk2` FOREIGN KEY (`personId`) REFERENCES `Person` (`personId`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `ContainerQueueSample`
---
-
-DROP TABLE IF EXISTS `ContainerQueueSample`;
-
-CREATE TABLE `ContainerQueueSample` (
-  `containerQueueSampleId` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `containerQueueId` int(11) UNSIGNED DEFAULT NULL,
-  `blSubSampleId` int(11) UNSIGNED DEFAULT NULL,
-  PRIMARY KEY (`containerQueueSampleId`),
-  KEY `ContainerQueueSample_ibfk1` (`containerQueueId`),
-  KEY `ContainerQueueSample_ibfk2` (`blSubSampleId`),
-  CONSTRAINT `ContainerQueueSample_ibfk1` FOREIGN KEY (`containerQueueId`) REFERENCES `ContainerQueue` (`containerQueueId`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ContainerQueueSample_ibfk2` FOREIGN KEY (`blSubSampleId`) REFERENCES `BLSubSample` (`blSubSampleId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 

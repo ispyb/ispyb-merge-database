@@ -4,10 +4,11 @@ DROP TABLE IF EXISTS `Aperture`;
 DROP TABLE IF EXISTS `BF_automationFault`;
 
 DROP TABLE IF EXISTS `BF_fault`;
+
+DROP TABLE IF EXISTS `BF_component_beamline`;
                                          
 DROP TABLE IF EXISTS `BF_component`;
 
-DROP TABLE IF EXISTS `BF_component_beamline`;
 
 DROP TABLE IF EXISTS `BF_system`;
 
@@ -56,10 +57,7 @@ DROP TABLE IF EXISTS `DataCollectionComment`;
 DROP TABLE IF EXISTS `DataCollectionPlanGroup`;
 
 
-DROP TABLE IF EXISTS `DewarRegistry`;
 
--
-DROP TABLE IF EXISTS `DewarReport`;
 
 
 DROP TABLE IF EXISTS `DiffractionPlan_has_Detector`;
@@ -174,3 +172,8 @@ DROP TABLE IF EXISTS `ContainerQueue`;
 DROP TABLE IF EXISTS `CalendarHash`;
 
 DROP TABLE IF EXISTS `DataReductionStatus`;
+
+-----
+DROP TABLE IF EXISTS `DewarRegistry`;
+
+DROP TABLE IF EXISTS `DewarReport`;
