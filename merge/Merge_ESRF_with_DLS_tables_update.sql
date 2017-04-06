@@ -31,9 +31,8 @@ ALTER TABLE `BLSample`
   ADD `shape` varchar(15) DEFAULT NULL,
 
   ADD KEY `BLSampleImage_idx1` (`blSubSampleId`),
-  ADD KEY `BLSample_fk5` (`screenComponentGroupId`),
- -- ADD KEY `BLSample_FKIndex_Status` (`blSampleStatus`),
-  ADD KEY `BLSample_Index1` (`name`);
+  ADD KEY `BLSample_fk5` (`screenComponentGroupId`);
+
 
 
 ALTER TABLE `BLSession`
@@ -64,7 +63,7 @@ ALTER TABLE `Container`
    ADD `packingFraction` FLOAT DEFAULT NULL;
 
 
-  ALTER TABLE `DataCollection`
+ALTER TABLE `DataCollection`
    ADD `blSampleId` INT(11) UNSIGNED DEFAULT NULL,
    ADD `sessionId` INT(11) UNSIGNED DEFAULT '0',
   ADD `experimentType` VARCHAR(24) DEFAULT NULL,
@@ -102,17 +101,16 @@ ALTER TABLE `Container`
   ADD `c3aperture` FLOAT DEFAULT NULL COMMENT 'Unit: um',
   ADD `c1lens` FLOAT DEFAULT NULL COMMENT 'Unit: %',
   ADD `c2lens` FLOAT DEFAULT NULL COMMENT 'Unit: %',
-  ADD `c3lens` FLOAT DEFAULT NULL COMMENT 'Unit: %',
-  ADD `startPositionId` INT(11) UNSIGNED DEFAULT NULL,
-  ADD `endPositionId` INT(11) UNSIGNED DEFAULT NULL;
+  ADD `c3lens` FLOAT DEFAULT NULL COMMENT 'Unit: %';
+-- ADD `startPositionId` INT(11) UNSIGNED DEFAULT NULL,
+-- ADD `endPositionId` INT(11) UNSIGNED DEFAULT NULL;
 
   ALTER TABLE `Detector`
   ADD `detectorMaxResolution` FLOAT DEFAULT NULL,
   ADD `detectorMinResolution` FLOAT DEFAULT NULL,
-    ADD `CS` FLOAT DEFAULT NULL COMMENT 'Unit: mm',
-     ADD `density` FLOAT DEFAULT NULL,
+  ADD `CS` FLOAT DEFAULT NULL COMMENT 'Unit: mm',
+  ADD `density` FLOAT DEFAULT NULL,
   ADD `composition` VARCHAR(16) DEFAULT NULL;
-
 
 
 ALTER TABLE `DewarTransportHistory`
@@ -139,11 +137,8 @@ ADD `dataCollectionPlanGroupId` INT(11) UNSIGNED DEFAULT NULL,
   ADD `presetForProposalId` INT(10) UNSIGNED DEFAULT NULL COMMENT 'Indicates this plan is available to all sessions on given proposal',
   ADD `beamLineName` VARCHAR(45) DEFAULT NULL COMMENT 'Indicates this plan is available to all sessions on given beamline';
 
-  ALTER TABLE `Frame`
-   MODIFY `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
-   ADD `frameSetId` INT(11) UNSIGNED DEFAULT NULL;
 
-   ALTER TABLE `FrameSet`
+ALTER TABLE `FrameSet`
     ADD `filePath` VARCHAR(255) DEFAULT NULL,
     ADD `internalPath` VARCHAR(255) DEFAULT NULL;
 
@@ -159,22 +154,12 @@ ADD `dataCollectionPlanGroupId` INT(11) UNSIGNED DEFAULT NULL,
 ALTER TABLE `Person`
    ADD`cache`TEXT;
 
-ALTER TABLE `Phasing`
-   MODIFY `recordTimeStamp`DATETIME DEFAULT CURRENT_TIMESTAMP;
-
-ALTER TABLE `Phasing_has_Scaling`
-   MODIFY `recordTimeStamp`DATETIME DEFAULT CURRENT_TIMESTAMP;
-
 
 ALTER TABLE `Protein`
   MODIFY `sequence` TEXT,
   ADD `modId` VARCHAR(20) DEFAULT NULL,
   ADD `concentrationTypeId` INT(11) UNSIGNED DEFAULT NULL,
   ADD `global` TINYINT(1) DEFAULT '0';
-
-
-ALTER TABLE `Screening`
-   MODIFY `bltimeStamp`DATETIME DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE `ScreeningOutput`
    ADD`screeningSuccess`TINYINT(1) DEFAULT '0';
@@ -191,3 +176,16 @@ ALTER TABLE `Session_has_Person`
 
 ALTER TABLE `Shipping`
    ADD`safetyLevel`VARCHAR(8) DEFAULT NULL;
+
+ALTER TABLE `Frame`
+   MODIFY `creationDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   ADD `frameSetId` INT(11) UNSIGNED DEFAULT NULL;
+
+ALTER TABLE `Phasing`
+   MODIFY `recordTimeStamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `Phasing_has_Scaling`
+   MODIFY `recordTimeStamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `Screening`
+   MODIFY `bltimeStamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
